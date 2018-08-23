@@ -1,3 +1,7 @@
+**Please note:** This typeface has many structural issues and probably needs to be rebuilt from the ground up, by someone with more type design knowledge than myself. You have been warned.
+
+*– Fredrik Hemsen, 23.08.2018*
+
 ![League Spartan Variable](leaguespartan-variable.gif)
 
 League Spartan Variable
