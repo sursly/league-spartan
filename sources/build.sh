@@ -1,15 +1,34 @@
 #!/bin/sh
 set -e
 
-
-echo "Generating Static fonts"
 mkdir -p ./fonts ./fonts/static/ttf ./fonts/static/otf ./fonts/variable
-fontmake -g Sources/LeagueSpartanVariable.glyphs -i -o ttf --output-dir ./fonts/static/ttf/
-fontmake -g Sources/LeagueSpartanVariable.glyphs -i -o otf --output-dir ./fonts/static/otf/
 
 
 echo "Generating Variable Font"
 fontmake -g Sources/LeagueSpartanVariable.glyphs --family-name 'League Spartan' -o variable  --output-path ./fonts/variable/LeagueSpartanVariable.ttf
+
+echo "Post processing VFs"
+
+
+vf=$(ls ./fonts/variable/*.ttf)
+
+gftools fix-vf-meta $vf;
+
+gftools fix-dsig --autofix $vf;
+gftools fix-unwanted-tables --tables MVAR $vf
+ttfautohint $vf $vf.fix
+mv $vf.fix $vf
+gftools fix-hinting $vf
+[ -f $vf.fix ] && mv $vf.fix $vf
+gftools fix-gasp $vf --autofix
+[ -f $vf.fix ] && mv $vf.fix $vf
+
+echo "Build Variable Webfont"
+woff2_compress ./fonts/variable/LeagueSpartanVariable.ttf
+
+echo "Generating Static fonts"
+fontmake -g Sources/LeagueSpartanVariable.glyphs -i -o ttf --output-dir ./fonts/static/ttf/
+fontmake -g Sources/LeagueSpartanVariable.glyphs -i -o otf --output-dir ./fonts/static/otf/
 
 
 echo "Post processing TTFs"
@@ -59,25 +78,6 @@ done
 
 
 
-
-echo "Post processing VFs"
-
-
-vf=$(ls ./fonts/variable/*.ttf)
-
-gftools fix-vf-meta $vf;
-
-gftools fix-dsig --autofix $vf;
-gftools fix-unwanted-tables --tables MVAR $vf
-ttfautohint $vf $vf.fix
-mv $vf.fix $vf
-gftools fix-hinting $vf
-[ -f $vf.fix ] && mv $vf.fix $vf
-gftools fix-gasp $vf --autofix
-[ -f $vf.fix ] && mv $vf.fix $vf
-
-echo "Build Variable Webfont"
-woff2_compress ./fonts/variable/LeagueSpartanVariable.ttf
 
 
 rm -rf master_ufo/ instance_ufo/
